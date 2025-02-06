@@ -2,16 +2,19 @@ package main
 
 import (
 	"fmt"
+	api "module/assignment/API"
 	"module/assignment/Database"
 	inventory "module/assignment/Inventory"
 	products "module/assignment/products"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
-//var p inventory.Inventory
+// var p inventory.Inventory
+var url api.ExternalAPI
 
 func getAllItem(b *gin.Context, inv *inventory.Inventory) {
 
@@ -19,15 +22,59 @@ func getAllItem(b *gin.Context, inv *inventory.Inventory) {
 
 }
 
-func getItem(b *gin.Context, inv *inventory.Inventory) {
-	idParm := b.Param("id")
+func getItemByCategory(b *gin.Context, inv *inventory.Inventory) {
 
-	id, err := strconv.Atoi(idParm)
+	/*idCateg := b.Request.URL.String()
+
+	str:= strings.Split(idCateg, "/")*/
+
+	id := b.Param("category")
+
+	cat := inv.ListByCategory(id)
+
+	if cat == nil {
+		b.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Category found"})
+		return
+	}
+
+	b.JSON(http.StatusOK, cat)
+
+}
+
+func getItemByName(b *gin.Context, inv *inventory.Inventory) {
+	//idName := b.Param("name")
+	url.BaseURL = b.Request.URL.String()
+	fmt.Println(url.BaseURL)
+	str := strings.Split(url.BaseURL, "/")
+	fmt.Println(str)
+	key := str[len(str)-1]
+	fmt.Println(key)
+	product, err := inv.FindProductByName(key)
+	if err != nil {
+		b.JSON(http.StatusNotFound, gin.H{"error": "Product not found with given name"})
+		return
+	}
+
+	b.IndentedJSON(http.StatusOK, *product)
+
+}
+
+func getItem(b *gin.Context, inv *inventory.Inventory) {
+
+	url.BaseURL = b.Request.URL.String()
+	fmt.Println(url.BaseURL)
+	str := strings.Split(url.BaseURL, "/")
+	key := str[len(str)-1]
+	fmt.Println(key)
+	//idParm := b.Param("id")
+	// idName := b.Param("name")
+	// fmt.Println(idName)
+	id, err := strconv.Atoi(key)
 	if err != nil {
 		b.JSON(http.StatusBadRequest, gin.H{"error": "Invalid product ID"})
 		return
 	}
-	b.IndentedJSON(http.StatusAccepted, id)
+	//b.IndentedJSON(http.StatusAccepted, id)
 	product, err := inv.GetByID(id)
 	if err != nil {
 		fmt.Println(err)
@@ -60,9 +107,15 @@ func saveItem(b *gin.Context, inv *inventory.Inventory) {
 }
 
 func deleteItem(b *gin.Context, inv *inventory.Inventory) {
-	idParm := b.Param("id")
+	url.BaseURL = b.Request.URL.String()
+	fmt.Println(url.BaseURL)
+	str := strings.Split(url.BaseURL, "/")
+	key := str[len(str)-1]
+	fmt.Println(key)
 
-	id, err := strconv.Atoi(idParm)
+	//idParm := b.Param("id")
+
+	id, err := strconv.Atoi(key)
 	if err != nil {
 		b.JSON(http.StatusNotFound, gin.H{"error": "ID not found"})
 		return
@@ -107,6 +160,8 @@ func main() {
 	router := gin.Default()
 	router.GET("/Items", func(b *gin.Context) { getAllItem(b, inv) })
 	router.GET("/Items/:id", func(b *gin.Context) { getItem(b, inv) })
+	router.GET("/Items/name/:name", func(b *gin.Context) { getItemByName(b, inv) })
+	router.GET("/Items/category/:category", func(b *gin.Context) { getItemByCategory(b, inv) })
 	router.POST("/Items", func(b *gin.Context) { saveItem(b, inv) })
 	router.DELETE("/Items/:id", func(b *gin.Context) { deleteItem(b, inv) })
 	router.Run("localhost:8080")
