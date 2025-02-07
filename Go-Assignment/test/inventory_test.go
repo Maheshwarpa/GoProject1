@@ -2,7 +2,7 @@ package test
 
 import (
 	"log"
-	inventory "module/assignment/inventory"
+	inventory "module/assignment/Inventory"
 	"module/assignment/products"
 	"testing"
 	//d "module/assignment/database"

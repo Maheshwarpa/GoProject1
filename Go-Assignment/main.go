@@ -97,7 +97,7 @@ func saveItem(b *gin.Context, inv *inventory.Inventory) {
 
 	err := inv.Save(p1)
 	if err != nil {
-		fmt.Errorf("error is:%s", err)
+		//fmt.Errorf("error is:%s", err)
 		b.JSON(http.StatusBadRequest, gin.H{"error": "Already Product Present"})
 		return
 	}
