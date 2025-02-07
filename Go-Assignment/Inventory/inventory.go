@@ -14,7 +14,7 @@ func (i *Inventory) AddProduct(p Products.Product) {
 	_, exists := i.Products[p.ID]
 
 	if exists {
-		fmt.Errorf("Already this product exists in your inventory")
+		//fmt.Errorf("Already this product exists in your inventory")
 
 		errors.New("Already this product exists in your inventory")
 		return
@@ -62,6 +62,7 @@ func (i *Inventory) TotalValue() float64 {
 	sum := 0.0
 	for _, v := range i.Products {
 		sum += (v.Price * float64(v.Quantity))
+		//fmt.Println(sum)
 	}
 	return sum
 }
@@ -73,6 +74,12 @@ func (i *Inventory) Save(p Products.Product) error {
 	} else {
 		i.AddProduct(p)
 		return nil
+	}
+}
+
+func (i *Inventory) Zoom() {
+	for k, _ := range i.Products {
+		delete(i.Products, k)
 	}
 }
 
