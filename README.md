@@ -149,7 +149,7 @@ Use the following API endpoints:
 - Delete an item: DELETE http://localhost:8080/Items/{id}
 
 - For POST requests, go to the Body tab and select raw with JSON format, then enter the product data:
-  """
+  ```json 
   {
     "id": 10,
     "name": "New Product",
@@ -157,18 +157,19 @@ Use the following API endpoints:
     "quantity": 20,
     "category": "Electronics"
 
-}"""
+}
+```
 
 ##### Command Prompt
 
 - Use curl commands to test API calls:
 
-   """
+   ```curl
   curl -X GET http://localhost:8080/Items
   curl -X GET http://localhost:8080/Items/{id}
   curl -X POST http://localhost:8080/Items -H "Content-Type: application/json" -d '{"id": 10, "name": "New Product", "price": 50.99, "quantity": 20, "category": "Electronics"}'
   curl -X DELETE HTTP://localhost:8080/Items/{id}
-  """
+  ```
 
 #### Future Improvements
 
